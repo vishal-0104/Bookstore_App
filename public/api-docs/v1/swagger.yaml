@@ -1,0 +1,136 @@
+openapi: 3.0.1
+info:
+  title: Bookstore API
+  description: API documentation for Bookstore application
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+paths:
+  /users/signup:
+    post:
+      summary: Create a new user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  required:
+                    - name
+                    - email
+                    - password
+                    - mobile_number
+                  properties:
+                    name:
+                      type: string
+                    email:
+                      type: string
+                    password:
+                      type: string
+                    mobile_number:
+                      type: string 
+      responses:
+        '201':
+          description: User created successfully
+        '400':
+          description: Validation error
+
+  /users/login:
+    post:
+      summary: Authenticate user and generate JWT token
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  required:
+                    - email
+                    - password
+                  properties:
+                    email:
+                      type: string
+                    password:
+                      type: string
+      responses:
+        '200':
+          description: Login successful
+        '401':
+          description: Invalid credentials
+
+  /users/forgot_password:
+    put:
+      summary: Send OTP for password reset
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  required:
+                    - email
+                  properties:
+                    email:
+                      type: string
+      responses:
+        '200':
+          description: OTP sent successfully
+        '404':
+          description: User not found
+
+  /users/reset_password/{id}:
+    put:
+      summary: Reset password using OTP
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  required:
+                    - otp
+                    - new_password
+                  properties:
+                    otp:
+                      type: integer
+                    new_password:
+                      type: string
+      responses:
+        '200':
+          description: Password reset successful
+        '400':
+          description: Invalid OTP
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
